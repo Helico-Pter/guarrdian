@@ -1,0 +1,21 @@
+auto_sync:
+  enabled: false
+  min_stars: 5
+guardian:
+  api_key: ''
+  fetch_limit: 30
+radarr:
+  api_key: ''
+  quality_profile_id: 1
+  root_folder_path: /movies
+  search_on_add: true
+  url: http://localhost:7878
+sonarr:
+  api_key: ''
+  quality_profile_id: 1
+  root_folder_path: /tv
+  search_on_add: true
+  url: http://localhost:8989
+ui:
+  hide_synced: false
+  theme: dark

@@ -1,0 +1,12 @@
+services:
+  guardian-sync:
+    build: .
+    container_name: guardian-sync
+    restart: unless-stopped
+    ports:
+      # Maps your host machine port to the container port
+      - "9988:9988"
+    volumes:
+      # Binds a single config directory for both settings and database
+      - ./config:/app/config
+      - ./static:/app/static
