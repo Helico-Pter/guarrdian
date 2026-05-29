@@ -5,13 +5,14 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy the requirements file and install dependencies
-COPY requirements.txt .
+COPY src/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy your Python script and other assets into the container
-COPY . .
+# Copy the source code and static assets into the container
+COPY src/ .
 
 # Create config directory for persistence
+# This is where config.yml and reviews.db will live
 RUN mkdir -p /app/config && chmod 777 /app/config
 
 # Expose the port your Web UI uses

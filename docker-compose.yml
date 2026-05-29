@@ -1,12 +1,11 @@
 services:
-  guardian-sync:
+  guarrdian:
+    image: ghcr.io/helico-pter/guarrdian:latest
     build: .
-    container_name: guardian-sync
+    container_name: guarrdian
     restart: unless-stopped
     ports:
-      # Maps your host machine port to the container port
       - "9988:9988"
     volumes:
-      # Binds a single config directory for both settings and database
+      # All persistent data (config.yml and reviews.db) lives here
       - ./config:/app/config
-      - ./static:/app/static

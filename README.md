@@ -1,57 +1,68 @@
-# guARRdian
+# guARRdian 🛡️
 
-Sync Guardian reviews directly to your Radarr and Sonarr libraries.
+Sync Guardian reviews directly to your Radarr and Sonarr libraries. guARRdian acts as a bridge between the Guardian's expert film and TV critics and your automated media collection.
 
-## 📁 File Management
-The application stores all its persistent data in a single `/config` directory. This includes:
-- `config/config.yml`: Your API keys and preferences.
-- `config/reviews.db`: The local database of fetched reviews.
+## 🚀 Quick Start with Docker
 
-When deploying with Docker, you only need to mount this one folder to keep your settings safe.
+The easiest way to run guARRdian is using Docker. The image is hosted on the GitHub Container Registry.
 
-## Features
-- **Reviewer Filtering:** Filter reviews by specific Guardian critics (Lucy Mangan, Mark Kermode, Cath Clarke, etc.).
-- **Smart Metadata:** Automatically resolves posters and direct links for IMDb, Letterboxd, and TVDb.
-- **Library Sync:** One-click addition of movies to Radarr and TV shows to Sonarr.
-- **Two-Way Sync:** Automatically detects and marks items already in your library.
-- **Pagination:** Smooth browsing with 10 results per page.
-- **Sync History:** Track everything you've added to your library in a dedicated history view.
-- **Customizable UI:** Hide synced items, toggle Light/Dark/Retro90s modes.
+### 1. Create a `docker-compose.yml`
+```yaml
+services:
+  guarrdian:
+    image: ghcr.io/helico-pter/guarrdian:latest
+    container_name: guarrdian
+    restart: unless-stopped
+    ports:
+      - "9988:9988"
+    volumes:
+      - ./config:/app/config
+```
 
-## Setup Instructions
+### 2. Launch the Application
+```bash
+docker compose up -d
+```
 
-### 1. Prerequisites
-- [Docker](https://www.docker.com/) and Docker Compose installed.
-- Access to your Radarr and Sonarr instances.
+### 3. Configure
+Navigate to `http://localhost:9988` and go to the **⚙️ Configuration** tab to set up your Guardian API key and *arr instances.
 
-### 2. Installation
-1.  Clone this repository to your local machine.
-2.  Ensure your critic images are present in the `static/` directory (e.g., `lucy.jpeg`, `mark.jpeg`).
-3.  Start the application:
-    ```bash
-    docker compose up -d --build
-    ```
-4.  Open your browser and navigate to `http://localhost:9988`.
-    - *Note:* The application port can be customized via the `PORT` environment variable (default: `9988`).
+---
 
-### 3. Initial Configuration
-Once the UI is loaded, click the **⚙️ Configuration** tab:
-- Enter your **Guardian API Key**.
-- Enter your **Radarr/Sonarr URLs** and **API Keys**.
-    - *Note:* If running in Docker, use your host IP (e.g., `http://192.168.1.50:7878`) rather than `localhost`.
-- Configure your **Root Folder Path** and select a **Quality Profile**.
+## 📂 Project Structure
 
-## General Usage
+guARRdian has been designed with a clean, standard layout to ensure ease of deployment and maintenance.
 
-### Review Picker
-- **Filtering:** Click on a reviewer's avatar at the top to see only their reviews.
-- **Star Rating:** The picker defaults to showing **3+ star reviews**. You can click the stars in the header to adjust this filter.
-- **Syncing:** Check the box next to the titles you want and click **"Send Selected to *arr"**.
-- **Sync Status:** Once an item is added, its checkbox is replaced by a green checkmark, and it is labeled **"IN LIBRARY"**. It remains visible in the picker for easy reference.
-- **External Links:** Hover over the links column to see brand icons for the Guardian article, IMDb page, and Letterboxd/TVDb.
+- **`/src`**: Contains the core application logic and static assets (baked into the Docker image).
+- **`/config`**: The only persistent directory you need to manage. It contains:
+  - `config.yml`: Your settings and API keys.
+  - `reviews.db`: The local cache of reviews and sync status.
+- **Root**: Clean repository root with only configuration and deployment files.
 
-### Automation
-In the **Configuration** tab, you can enable **Auto-Sync**. When enabled, any new review discovered with a **5-star rating** will be added to your library automatically without requiring manual approval.
+## ✨ Features
+
+- **Expert Curation:** Filter reviews by specific Guardian critics (Lucy Mangan, Peter Bradshaw, Mark Kermode, etc.).
+- **Rich Metadata:** Automatically resolves posters and direct links for IMDb, Letterboxd, and TVDb using your *arr libraries.
+- **Smart Library Sync:** One-click addition to Radarr/Sonarr with automatic detection of existing content.
+- **Automation:** Optional "Auto-Sync" for highly-rated (5-star) reviews.
+- **Modern UI:** Responsive design with Light, Dark, and Retro 90s themes.
+- **Privacy First:** No external telemetry; everything is stored locally in your `config` folder.
+
+## 🛠️ Development & Building
+
+If you wish to build the image locally:
+
+```bash
+docker build -t ghcr.io/helico-pter/guarrdian:latest .
+```
+
+To run locally without Docker:
+
+```bash
+cd src
+pip install -r requirements.txt
+python app.py
+```
 
 ---
 *Created with guARRdian Sync.*
