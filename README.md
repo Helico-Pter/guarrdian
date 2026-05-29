@@ -1,5 +1,7 @@
 # guARRdian 🛡️
 
+![main-program](https://i.ibb.co/TB5XVHgM/firefox-k-N4-Vjp-Ohv-V.png)
+
 Sync Guardian reviews directly to your Radarr and Sonarr libraries. guARRdian acts as a bridge between the Guardian's expert film and TV critics and your automated media collection.
 
 ## 🚀 Quick Start with Docker
