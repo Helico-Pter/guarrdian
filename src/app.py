@@ -727,7 +727,7 @@ init_db()
 # 2. WEB UI (FLASK)
 # ==========================================
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 # Optimise static file delivery: Cache local images for 1 year in the browser
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000 
 
@@ -738,9 +738,9 @@ HTML_TEMPLATE = """
     <title>guARRdian Sync</title>
     <!-- Favicon Assets -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('apple_touch_icon') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicons/favicon-16x16.png">
-    <link rel="manifest" href="/static/favicons/site.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicons/site.webmanifest') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('favicon') }}">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -1296,12 +1296,12 @@ def toggle_theme():
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static', 'favicons'),
+    return send_from_directory(os.path.join(app.static_folder, 'favicons'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/apple-touch-icon.png')
 def apple_touch_icon():
-    return send_from_directory(os.path.join(app.root_path, 'static', 'favicons'),
+    return send_from_directory(os.path.join(app.static_folder, 'favicons'),
                                'apple-touch-icon.png', mimetype='image/png')
 
 @app.route("/", methods=["GET", "POST"])
