@@ -4,7 +4,7 @@ Sync Guardian reviews directly to your Radarr and Sonarr libraries. guARRdian ac
 
 ## 🚀 Quick Start with Docker
 
-The easiest way to run guARRdian is using Docker. The image is hosted on the GitHub Container Registry.
+The easiest way to run guARRdian is using Docker.
 
 ### 1. Create a `docker-compose.yml`
 ```yaml
@@ -37,7 +37,6 @@ guARRdian has been designed with a clean, standard layout to ensure ease of depl
 - **`/config`**: The only persistent directory you need to manage. It contains:
   - `config.yml`: Your settings and API keys.
   - `reviews.db`: The local cache of reviews and sync status.
-- **Root**: Clean repository root with only configuration and deployment files.
 
 ## ✨ Features
 
