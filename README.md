@@ -27,7 +27,7 @@ docker compose up -d
 ```
 
 ### 3. Configure
-Navigate to `http://localhost:9988` and go to the **⚙️ Configuration** tab to set up your Guardian API key and *arr instances.
+Navigate to `http://YOUR_IP:9988` and go to the **⚙️ Configuration** tab to set up your Guardian API key and *arr instances.
 
 ---
 
