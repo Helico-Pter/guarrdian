@@ -727,7 +727,9 @@ init_db()
 # 2. WEB UI (FLASK)
 # ==========================================
 
-app = Flask(__name__, static_folder='static')
+# Use absolute path for static files to ensure reliability across environments
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, static_folder=os.path.join(BASE_DIR, 'static'))
 # Optimise static file delivery: Cache local images for 1 year in the browser
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000 
 
