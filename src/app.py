@@ -769,7 +769,7 @@ HTML_TEMPLATE = """
             --link-color: #0000ee; --star-active: #ff0000; --star-inactive: #808080;
             --brand-accent: #ff0000;
         }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: var(--bg-color); color: var(--text-color); transition: 0.3s; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: var(--bg-color); color: var(--text-color); transition: 0.3s; display: flex; flex-direction: column; min-height: 100vh; }
         
         [data-theme="retro90s"] body { font-family: "Times New Roman", Times, serif; }
         [data-theme="retro90s"] .card, [data-theme="retro90s"] .nav-bar, [data-theme="retro90s"] .settings-section, [data-theme="retro90s"] .controls-header { border: 3px outset #fff !important; box-shadow: 2px 2px 0 #000 !important; border-radius: 0 !important; }
@@ -934,7 +934,9 @@ HTML_TEMPLATE = """
     {% endif %}
 </head>
 <body>
-    <div class="nav-bar">
+    {% set base_route = 'index' if view == 'home' else 'history' %}
+    
+    <nav class="nav-bar">
         <a href="{{ url_for('index') }}" class="nav-link {% if view == 'home' %}active{% endif %}">📰 Review Picker</a>
         <a href="{{ url_for('history') }}" class="nav-link {% if view == 'history' %}active{% endif %}">📜 Sync History</a>
         <a href="{{ url_for('settings') }}" class="nav-link {% if view == 'settings' %}active{% endif %}">⚙️ Configuration</a>
@@ -943,12 +945,10 @@ HTML_TEMPLATE = """
                 {% if config.ui.theme == 'dark' %}<i class="fas fa-sun"></i>{% else %}<i class="fas fa-moon"></i>{% endif %}
             </button>
         </form>
-    </div>
+    </nav>
 
     {% if view == 'home' or view == 'history' %}
-        {% set base_route = 'index' if view == 'home' else 'history' %}
-        
-        <div class="theme-toggle-container">
+        <header class="theme-toggle-container">
             <div style="flex-grow: 1;">
                 <div class="top-contributors-label"><i class="fas fa-award"></i> TOP CONTRIBUTORS</div>
                 <div class="reviewer-list" style="margin-bottom: 0;">
@@ -976,15 +976,9 @@ HTML_TEMPLATE = """
                     </div>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <div class="card">
-            {% if view == 'home' and not config.guardian.api_key %}
-                <div style="background: #dc3545; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-                    <strong>Missing Guardian API Key!</strong> Please go to the Configuration tab to set it up before fetching.
-                </div>
-            {% endif %}
-            
+        <main class="card">
             <div class="controls-header">
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <div class="brand-logo">gu<span>ARR</span>dian</div>
@@ -996,7 +990,8 @@ HTML_TEMPLATE = """
                     <form method="POST" style="margin:0;">
                         <input type="hidden" name="action" value="force_sync">
                         <button type="submit" class="refresh-btn" title="Sync with *arr libraries now">🔗 Sync Library</button>
-                    </form>                    {% if fetch_msg %}<span style="color:var(--btn-sync); font-weight:bold; font-size: 14px;">{{ fetch_msg }}</span>{% endif %}
+                    </form>
+                    {% if fetch_msg %}<span style="color:var(--btn-sync); font-weight:bold; font-size: 14px;">{{ fetch_msg }}</span>{% endif %}
                     {% else %}
                     <span style="opacity:0.7; font-size: 14px;">Total Synced: {{ reviews|length }}</span>
                     {% endif %}
@@ -1083,28 +1078,29 @@ HTML_TEMPLATE = """
                                     <summary>Read Review Extract</summary>
                                     <div class="review-body">{{ item.review_text }}</div>
                                 </details>
-                        </td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <img src="{% if item.reviewer_image.startswith('http') %}{{ item.reviewer_image }}{% else %}{{ url_for('static', filename=item.reviewer_image) }}{% endif %}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #2c2c2c;" width="30" height="30">
-                                {{ item.reviewer }}
-                            </div>
-                        </td>
-                        <td style="color:var(--star-active); font-weight:bold; font-size: 16px;">
-                            {% if item.rating > 0 %}{{ '★' * item.rating }}{% else %}Unrated{% endif %}
-                        </td>
-                        <td>
-                            <div class="link-icons">
-                                <a href="{{ item.guardian_url }}" target="_blank" title="Guardian" class="icon-guardian">G</a>
-                                <a href="{{ item.imdb_url }}" target="_blank" title="IMDb" class="icon-imdb"><i class="fab fa-imdb"></i></a>
-                                {% if item.letterboxd_url %}<a href="{{ item.letterboxd_url }}" target="_blank" title="Letterboxd" class="icon-letterboxd"><i class="fab fa-square-letterboxd"></i></a>{% endif %}
-                                {% if item.tvdb_url %}<a href="{{ item.tvdb_url }}" target="_blank" title="TVDb" class="icon-tvdb"><i class="fas fa-tv"></i></a>{% endif %}
-                            </div>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="7" style="text-align:center; padding: 20px;">No reviews found matching your filter. Try adjusting your stars or reviewer selection!</td></tr>
-                    {% endfor %}
+                            </td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <img src="{% if item.reviewer_image.startswith('http') %}{{ item.reviewer_image }}{% else %}{{ url_for('static', filename=item.reviewer_image) }}{% endif %}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #2c2c2c;" width="30" height="30">
+                                    {{ item.reviewer }}
+                                </div>
+                            </td>
+                            <td style="color:var(--star-active); font-weight:bold; font-size: 16px;">
+                                {% if item.rating > 0 %}{{ '★' * item.rating }}{% else %}Unrated{% endif %}
+                            </td>
+                            <td>
+                                <div class="link-icons">
+                                    <a href="{{ item.guardian_url }}" target="_blank" title="Guardian" class="icon-guardian">G</a>
+                                    <a href="{{ item.imdb_url }}" target="_blank" title="IMDb" class="icon-imdb"><i class="fab fa-imdb"></i></a>
+                                    {% if item.letterboxd_url %}<a href="{{ item.letterboxd_url }}" target="_blank" title="Letterboxd" class="icon-letterboxd"><i class="fab fa-square-letterboxd"></i></a>{% endif %}
+                                    {% if item.tvdb_url %}<a href="{{ item.tvdb_url }}" target="_blank" title="TVDb" class="icon-tvdb"><i class="fas fa-tv"></i></a>{% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="7" style="text-align:center; padding: 20px;">No reviews found matching your filter. Try adjusting your stars or reviewer selection!</td></tr>
+                        {% endfor %}
+                    </table>
                     {% if reviews %}
                     <button type="submit" class="sync-btn">Send Selected to *arr</button>
                     {% endif %}
@@ -1132,7 +1128,7 @@ HTML_TEMPLATE = """
                         <td>
                             <strong>{{ item.title }}</strong> ({{ item.type | upper }})
                             <div style="margin-top: 5px; font-size: 12px; opacity: 0.8;">
-                                <i class="fas fa-check-circle" style="color: var(--btn-sync);"></i> Successfully added to {{ 'Radarr' if item.type == 'movie' else 'Sonarr' }}
+                                <i class="fas fa-check-circle" style="color: var(--btn-sync); font-size: 1.1em;"></i> Successfully added to {{ 'Radarr' if item.type == 'movie' else 'Sonarr' }}
                             </div>
                         </td>
                         <td>
@@ -1158,23 +1154,9 @@ HTML_TEMPLATE = """
                     {% endfor %}
                 </table>
             {% endif %}
-        </div>
-
-        {% if total_pages > 1 %}
-        <div class="pagination" style="margin-top: 20px; margin-bottom: 40px;">
-            {% if page > 1 %}
-            <a href="{{ url_for(base_route, page=page-1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">&laquo; Prev</a>
-            {% endif %}
-
-            <span class="page-info">Page {{ page }} of {{ total_pages }} ({{ total_count }} total)</span>
-
-            {% if page < total_pages %}
-            <a href="{{ url_for(base_route, page=page+1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">Next &raquo;</a>
-            {% endif %}
-        </div>
-        {% endif %}
+        </main>
     {% elif view == 'settings' %}
-        <div class="card">
+        <main class="card">
             <h2>⚙️ System Configuration</h2>
             <p>Update your connection details below. These settings are saved to <code>config/config.yml</code>.</p>
             {% if save_msg %}
@@ -1269,7 +1251,21 @@ HTML_TEMPLATE = """
                 </div>
                 <button type="submit" name="action" value="save_settings" class="sync-btn" style="width: 100%; font-size: 16px; margin-top: 25px;">Save Settings</button>
             </form>
-        </div>
+        </main>
+    {% endif %}
+
+    {% if total_pages and total_pages > 1 %}
+    <footer class="pagination" style="margin: auto auto 80px auto; padding: 20px; border-top: 2px solid var(--border-color); text-align: center; width: 100%; max-width: 1000px; display: block !important;">
+        {% if page > 1 %}
+        <a href="{{ url_for(base_route, page=page-1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">&laquo; Prev</a>
+        {% endif %}
+
+        <span class="page-info" style="margin: 0 15px;">Page {{ page }} of {{ total_pages }} ({{ total_count }} total)</span>
+
+        {% if page < total_pages %}
+        <a href="{{ url_for(base_route, page=page+1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">Next &raquo;</a>
+        {% endif %}
+    </footer>
     {% endif %}
 </body>
 </html>
