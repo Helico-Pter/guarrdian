@@ -1040,6 +1040,9 @@ HTML_TEMPLATE = """
 
                 <form method="POST">
                     <input type="hidden" name="action" value="sync">
+                    {% if reviews %}
+                    <button type="submit" class="sync-btn" style="margin-bottom: 15px;">Send Selected to *arr</button>
+                    {% endif %}
                     <table id="reviews-table">
                         <tr>
                             <th class="checkbox-cell"><input type="checkbox" onClick="toggleAll(this)" title="Select All" /></th>
@@ -1101,9 +1104,6 @@ HTML_TEMPLATE = """
                         <tr><td colspan="7" style="text-align:center; padding: 20px;">No reviews found matching your filter. Try adjusting your stars or reviewer selection!</td></tr>
                         {% endfor %}
                     </table>
-                    {% if reviews %}
-                    <button type="submit" class="sync-btn">Send Selected to *arr</button>
-                    {% endif %}
                 </form>
             {% else %}
                 <table>
