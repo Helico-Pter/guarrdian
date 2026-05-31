@@ -1158,21 +1158,21 @@ HTML_TEMPLATE = """
                     {% endfor %}
                 </table>
             {% endif %}
+        </div>
 
-            {% if total_pages > 1 %}
-            <div class="pagination">
-                {% if page > 1 %}
-                <a href="{{ url_for(base_route, page=page-1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">&laquo; Prev</a>
-                {% endif %}
+        {% if total_pages > 1 %}
+        <div class="pagination" style="margin-top: 20px; margin-bottom: 40px;">
+            {% if page > 1 %}
+            <a href="{{ url_for(base_route, page=page-1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">&laquo; Prev</a>
+            {% endif %}
 
-                <span class="page-info">Page {{ page }} of {{ total_pages }} ({{ total_count }} total)</span>
+            <span class="page-info">Page {{ page }} of {{ total_pages }} ({{ total_count }} total)</span>
 
-                {% if page < total_pages %}
-                <a href="{{ url_for(base_route, page=page+1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">Next &raquo;</a>
-                {% endif %}
-            </div>
+            {% if page < total_pages %}
+            <a href="{{ url_for(base_route, page=page+1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">Next &raquo;</a>
             {% endif %}
         </div>
+        {% endif %}
     {% elif view == 'settings' %}
         <div class="card">
             <h2>⚙️ System Configuration</h2>
