@@ -323,7 +323,8 @@ def process_auto_sync(config):
         
     min_stars = config['auto_sync'].get('min_stars', 5)
     # Fetch all 'new' reviews that meet the star rating
-    pending = get_cached_reviews(min_stars, 'all', 'all')
+    data = get_cached_reviews(min_stars, 'all', 'all', hide_synced=True, per_page=100)
+    pending = data.get("reviews", [])
     
     synced_count = 0
     for r in pending:
@@ -1108,20 +1109,6 @@ HTML_TEMPLATE = """
                     <button type="submit" class="sync-btn">Send Selected to *arr</button>
                     {% endif %}
                 </form>
-
-                {% if total_pages > 1 %}
-                <div class="pagination">
-                {% if page > 1 %}
-                <a href="{{ url_for('index', page=page-1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">&laquo; Prev</a>
-                {% endif %}
-
-                <span class="page-info">Page {{ page }} of {{ total_pages }} ({{ total_count }} total)</span>
-
-                {% if page < total_pages %}
-                <a href="{{ url_for('index', page=page+1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">Next &raquo;</a>
-                {% endif %}
-                </div>
-                {% endif %}
             {% else %}
                 <table>
                     <tr>
@@ -1170,20 +1157,20 @@ HTML_TEMPLATE = """
                     <tr><td colspan="6" style="text-align:center; padding: 40px; opacity: 0.6;">Your sync history is empty. Go to the Review Picker to start adding content!</td></tr>
                     {% endfor %}
                 </table>
-                
-                {% if total_pages > 1 %}
-                <div class="pagination">
-                    {% if page > 1 %}
-                    <a href="{{ url_for('history', page=page-1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">&laquo; Prev</a>
-                    {% endif %}
-                    
-                    <span class="page-info">Page {{ page }} of {{ total_pages }} ({{ total_count }} total)</span>
-                    
-                    {% if page < total_pages %}
-                    <a href="{{ url_for('history', page=page+1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">Next &raquo;</a>
-                    {% endif %}
-                </div>
+            {% endif %}
+
+            {% if total_pages > 1 %}
+            <div class="pagination">
+                {% if page > 1 %}
+                <a href="{{ url_for(base_route, page=page-1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">&laquo; Prev</a>
                 {% endif %}
+
+                <span class="page-info">Page {{ page }} of {{ total_pages }} ({{ total_count }} total)</span>
+
+                {% if page < total_pages %}
+                <a href="{{ url_for(base_route, page=page+1, reviewer=selected_reviewer, min_stars=min_stars, media_type=selected_media_type) }}" class="page-link">Next &raquo;</a>
+                {% endif %}
+            </div>
             {% endif %}
         </div>
     {% elif view == 'settings' %}
@@ -1221,7 +1208,7 @@ HTML_TEMPLATE = """
                         <h3 style="margin-top:0;">🎬 Radarr (Movies)</h3>
                         <div class="form-group"><label>URL (e.g., http://192.168.1.10:7878)</label><input type="text" name="radarr_url" value="{{ config.radarr.url }}"></div>
                         <div class="form-group"><label>API Key</label><input type="text" name="radarr_api_key" value="{{ config.radarr.api_key }}"></div>
-                        <div class="form-group"><label>Root Folder Path</label><input type="text" name="radarr_root_folder_path" value="{{ config.radarr.root_folder_path }}"></div>
+                        <div class="form-group"><label>Root Folder Path</label><input type="text" name="radarr_root_folder_path" value="{{ config.radarr.root_folder_path }}" placeholder="As radarr sees it"></div>
                         <div class="form-group">
                             <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <label style="margin-bottom:0;">Quality Profile</label>
@@ -1245,7 +1232,7 @@ HTML_TEMPLATE = """
                         <h3 style="margin-top:0;">📺 Sonarr (TV Shows)</h3>
                         <div class="form-group"><label>URL (e.g., http://192.168.1.10:8989)</label><input type="text" name="sonarr_url" value="{{ config.sonarr.url }}"></div>
                         <div class="form-group"><label>API Key</label><input type="text" name="sonarr_api_key" value="{{ config.sonarr.api_key }}"></div>
-                        <div class="form-group"><label>Root Folder Path</label><input type="text" name="sonarr_root_folder_path" value="{{ config.sonarr.root_folder_path }}"></div>
+                        <div class="form-group"><label>Root Folder Path</label><input type="text" name="sonarr_root_folder_path" value="{{ config.sonarr.root_folder_path }}" placeholder="As sonarr sees it"></div>
                         <div class="form-group">
                             <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <label style="margin-bottom:0;">Quality Profile</label>
@@ -1267,11 +1254,17 @@ HTML_TEMPLATE = """
 
                     <div class="settings-section" style="grid-column: span 2;">
                         <h3 style="margin-top:0;">🤖 Automation (Auto-Sync)</h3>
-                        <div class="form-row">
-                            <input type="checkbox" name="auto_sync_enabled" value="1" {% if config.auto_sync.enabled %}checked{% endif %}>
-                            <label style="margin:0;">Enable Auto-Sync</label>
+                        <div style="display: flex; gap: 30px; align-items: flex-end;">
+                            <div class="form-row" style="margin-bottom: 0;">
+                                <input type="checkbox" name="auto_sync_enabled" value="1" {% if config.auto_sync.enabled %}checked{% endif %}>
+                                <label style="margin:0;">Enable Auto-Sync</label>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0; flex-grow: 0; width: 120px;">
+                                <label style="white-space: nowrap;">Min Stars</label>
+                                <input type="number" name="auto_sync_min_stars" value="{{ config.auto_sync.get('min_stars', 5) }}" min="1" max="5" style="text-align: center; font-weight: bold; font-size: 1.1em;">
+                            </div>
                         </div>
-                        <small style="opacity:0.7; font-size: 11px; margin-top: 5px;">When enabled, new reviews with 5 stars will be added to *arr immediately upon discovery.</small>
+                        <small style="opacity:0.7; font-size: 11px; margin-top: 10px; display: block;">When enabled, new reviews with {{ config.auto_sync.get('min_stars', 5) }} or more stars will be added to *arr immediately upon discovery.</small>
                     </div>
                 </div>
                 <button type="submit" name="action" value="save_settings" class="sync-btn" style="width: 100%; font-size: 16px; margin-top: 25px;">Save Settings</button>
@@ -1426,6 +1419,7 @@ def settings():
             config['ui']['theme'] = request.form.get('ui_theme', 'dark')
             config['ui']['hide_synced'] = request.form.get('ui_hide_synced') == "1"
             config['auto_sync']['enabled'] = request.form.get('auto_sync_enabled') == "1"
+            config['auto_sync']['min_stars'] = int(request.form.get('auto_sync_min_stars', 5))
             config['radarr']['url'] = request.form.get('radarr_url', '')
             config['radarr']['api_key'] = request.form.get('radarr_api_key', '')
             config['radarr']['root_folder_path'] = request.form.get('radarr_root_folder_path', '')
