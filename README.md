@@ -1,10 +1,12 @@
 # guARRdian 🛡️
 
+![main-program](https://i.ibb.co/TB5XVHgM/firefox-k-N4-Vjp-Ohv-V.png)
+
 Sync Guardian reviews directly to your Radarr and Sonarr libraries. guARRdian acts as a bridge between the Guardian's expert film and TV critics and your automated media collection.
 
 ## 🚀 Quick Start with Docker
 
-The easiest way to run guARRdian is using Docker. The image is hosted on the GitHub Container Registry.
+The easiest way to run guARRdian is using Docker.
 
 ### 1. Create a `docker-compose.yml`
 ```yaml
@@ -25,7 +27,7 @@ docker compose up -d
 ```
 
 ### 3. Configure
-Navigate to `http://localhost:9988` and go to the **⚙️ Configuration** tab to set up your Guardian API key and *arr instances.
+Navigate to `http://YOUR_IP:9988` and go to the **⚙️ Configuration** tab to set up your Guardian API key and *arr instances.
 
 ---
 
@@ -37,7 +39,6 @@ guARRdian has been designed with a clean, standard layout to ensure ease of depl
 - **`/config`**: The only persistent directory you need to manage. It contains:
   - `config.yml`: Your settings and API keys.
   - `reviews.db`: The local cache of reviews and sync status.
-- **Root**: Clean repository root with only configuration and deployment files.
 
 ## ✨ Features
 
